@@ -6,7 +6,6 @@ import exceptions.InvalidCreditRange;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import exceptions.NotInStock;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -140,5 +139,47 @@ public class UserTest {
         User user = new User();
 
         assertThrows(CommodityIsNotInBuyList.class, () -> user.removeItemFromBuyList(commodity));
+    }
+
+    @Test
+    public void testRemoveItemFromBuyListWithOnlyOneCommodity() throws CommodityIsNotInBuyList {
+        String commodity_id1 = "1";
+        String commodity_id2 = "2";
+
+        Commodity commodity1 = new Commodity();
+        Commodity commodity2 = new Commodity();
+        commodity1.setId(commodity_id1);
+        commodity2.setId(commodity_id2);
+
+        User user = new User();
+        user.addBuyItem(commodity1);
+        user.addBuyItem(commodity2);
+        user.removeItemFromBuyList(commodity1);
+
+        Map<String, Integer> expectedBuyList = new HashMap<>();
+        expectedBuyList.put(commodity_id2, 1);
+
+        assertEquals(expectedBuyList, user.getBuyList());
+    }
+
+    @Test
+    public void testRemoveItemFromBuyListWithMoreThanOneCommodity() throws CommodityIsNotInBuyList{
+        String commodity_id = "35";
+        int expectedBuyListAmount = 3 - 1;
+
+        Commodity commodity = new Commodity();
+        commodity.setId(commodity_id);
+
+        User user = new User();
+        user.addBuyItem(commodity);
+        user.addBuyItem(commodity);
+        user.addBuyItem(commodity);
+
+        Map<String, Integer> expectedBuyList = new HashMap<>();
+        expectedBuyList.put(commodity_id, expectedBuyListAmount);
+
+        user.removeItemFromBuyList(commodity);
+
+        assertEquals(expectedBuyList, user.getBuyList());
     }
 }
